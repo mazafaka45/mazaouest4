@@ -465,10 +465,35 @@ func main() {
 							"Failed":coerceString(m["Failed"]),
 						}
 					} else {
-						badge:=strings.ToLower(coerceString(m["badge"]))
-						prob:="Inconnue"
-						switch badge {case "low": prob="Probabilité de livraison Haute"; case "high": prob="Probabilité de livraison Faible"}
-						out["result"].(gin.H)[phone]=gin.H{"type":"badge","badge":badge,"probability":prob}
+						badge := strings.ToLower(strings.TrimSpace(coerceString(m["badge"])))
+
+// Normalisation des valeurs possibles
+switch badge {
+case "low":
+    badge = "low"
+
+case "high", "hight":
+    badge = "high"
+
+default:
+    badge = "unknown"
+}
+
+prob := "Inconnue"
+
+switch badge {
+case "low":
+    prob = "Probabilité de livraison Haute"
+
+case "high":
+    prob = "Probabilité de livraison Faible"
+}
+
+out["result"].(gin.H)[phone] = gin.H{
+    "type": "badge",
+    "badge": badge,
+    "probability": prob,
+}
 					}
 				}
 			}
