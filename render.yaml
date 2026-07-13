@@ -1,0 +1,20 @@
+services:
+- type: web
+  name: noest-proxy
+  env: go
+  plan: free
+  buildCommand: |
+    # Render often sets GOFLAGS='-mod=readonly'; clear it so tidy can write go.sum
+    GOFLAGS= go mod tidy
+    GOFLAGS= go build -tags netgo -ldflags '-s -w' -o app .
+  startCommand: ./app
+  autoDeploy: true
+  envVars:
+  - key: UPSTREAM_BASE
+    value: https://app.noest-dz.com
+  - key: SCORE_PATH
+    value: /shippingAPI/scoring
+  - key: ALLOWED_ORIGIN
+    value: "*"
+  - key: API_BEARER
+    sync: false
